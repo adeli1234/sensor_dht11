@@ -1,0 +1,430 @@
+[
+    {
+        "id": "7f93e19fc86b0dc6",
+        "type": "tab",
+        "label": "Flujo 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "52308c10bc982134",
+        "type": "serial in",
+        "z": "7f93e19fc86b0dc6",
+        "name": "",
+        "serial": "75ae6a114c77b014",
+        "x": 70,
+        "y": 260,
+        "wires": [
+            [
+                "f9f6d3d499473465"
+            ]
+        ]
+    },
+    {
+        "id": "f9f6d3d499473465",
+        "type": "json",
+        "z": "7f93e19fc86b0dc6",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 230,
+        "y": 260,
+        "wires": [
+            [
+                "eae59eb35a5645f2",
+                "86c249719382d622",
+                "a12e1e5f9e86a1d3",
+                "eac55ad40d5ac2d1"
+            ]
+        ]
+    },
+    {
+        "id": "28ba2801cee7b00a",
+        "type": "ui_gauge",
+        "z": "7f93e19fc86b0dc6",
+        "name": "",
+        "group": "ui_g_actual",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "50",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3d624ab0deabae26",
+        "type": "ui_gauge",
+        "z": "7f93e19fc86b0dc6",
+        "name": "",
+        "group": "ui_g_actual",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Humedad",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 720,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "2831862ef61c6cc5",
+        "type": "ui_chart",
+        "z": "7f93e19fc86b0dc6",
+        "name": "",
+        "group": "ui_g_hist",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Temperatura y humedad en vivo",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1050,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "46fa2a1fcc9bac10",
+        "type": "mysql",
+        "z": "7f93e19fc86b0dc6",
+        "mydb": "db_centrodatos",
+        "name": "centro_datos",
+        "x": 890,
+        "y": 500,
+        "wires": [
+            [
+                "064c4be67bb3fc64",
+                "c20b5e5a370eac3b"
+            ]
+        ]
+    },
+    {
+        "id": "eae59eb35a5645f2",
+        "type": "function",
+        "z": "7f93e19fc86b0dc6",
+        "name": "function 1",
+        "func": "msg.payload = msg.payload.temperatura;\nmsg.topic = \"Temperatura\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 260,
+        "wires": [
+            [
+                "28ba2801cee7b00a",
+                "2831862ef61c6cc5"
+            ]
+        ]
+    },
+    {
+        "id": "86c249719382d622",
+        "type": "function",
+        "z": "7f93e19fc86b0dc6",
+        "name": "function 2",
+        "func": "msg.payload = msg.payload.humedad;\nmsg.topic = \"Humedad\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 320,
+        "wires": [
+            [
+                "3d624ab0deabae26",
+                "2831862ef61c6cc5"
+            ]
+        ]
+    },
+    {
+        "id": "eac55ad40d5ac2d1",
+        "type": "function",
+        "z": "7f93e19fc86b0dc6",
+        "name": "Armar INSERT",
+        "func": "msg.topic = \"INSERT INTO lecturas_dht11 (equipo, temperatura, humedad) VALUES ('\" \n            + msg.payload.equipo + \"', \" \n            + msg.payload.temperatura + \", \" \n            + msg.payload.humedad + \");\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 440,
+        "wires": [
+            [
+                "46fa2a1fcc9bac10"
+            ]
+        ]
+    },
+    {
+        "id": "192cba532d6e2869",
+        "type": "inject",
+        "z": "7f93e19fc86b0dc6",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 420,
+        "y": 560,
+        "wires": [
+            [
+                "b65b621b5f1c137d"
+            ]
+        ]
+    },
+    {
+        "id": "b65b621b5f1c137d",
+        "type": "function",
+        "z": "7f93e19fc86b0dc6",
+        "name": "Consulta SQL",
+        "func": "msg.topic = \"SELECT DATE_FORMAT(creado_en, '%H:%i:%s') AS Hora, equipo AS Equipo, temperatura AS 'Temp C', humedad AS 'Hum %' FROM lecturas_dht11 ORDER BY id DESC LIMIT 5;\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 560,
+        "wires": [
+            [
+                "46fa2a1fcc9bac10"
+            ]
+        ]
+    },
+    {
+        "id": "064c4be67bb3fc64",
+        "type": "ui_template",
+        "z": "7f93e19fc86b0dc6",
+        "group": "acc698b5ef2c52d7",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<h3>Últimos registros guardados en MariaDB</h3>\n<table border=\"1\" style=\"width:100%; text-align:left; border-collapse:collapse;\">\n  <thead>\n    <tr style=\"background-color:#17272c; color:white;\">\n      <th style=\"padding:6px;\">Hora</th>\n      <th style=\"padding:6px;\">Equipo</th>\n      <th style=\"padding:6px;\">Temp °C</th>\n      <th style=\"padding:6px;\">Hum %</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr ng-repeat=\"row in msg.payload\">\n      <td style=\"padding:6px;\">{{row.Hora}}</td>\n      <td style=\"padding:6px;\">{{row.Equipo}}</td>\n      <td style=\"padding:6px;\"><b>{{row['Temp C']}}</b></td>\n      <td style=\"padding:6px;\">{{row['Hum %']}}</td>\n    </tr>\n  </tbody>\n</table>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1080,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c20b5e5a370eac3b",
+        "type": "ui_template",
+        "z": "7f93e19fc86b0dc6",
+        "group": "ui_g_tabla",
+        "name": "",
+        "order": 0,
+        "width": "6",
+        "height": "6",
+        "format": "<h3>Últimos registros guardados en MariaDB</h3>\n<table border=\"1\" style=\"width:100%; text-align:left; border-collapse:collapse;\">\n    <thead>\n        <tr style=\"background-color:#17272c; color:white;\">\n            <th style=\"padding:6px;\">Hora</th>\n            <th style=\"padding:6px;\">Equipo</th>\n            <th style=\"padding:6px;\">Temp °C</th>\n            <th style=\"padding:6px;\">Hum %</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr ng-repeat=\"row in msg.payload\">\n            <td style=\"padding:6px;\">{{row.Hora}}</td>\n            <td style=\"padding:6px;\">{{row.Equipo}}</td>\n            <td style=\"padding:6px;\"><b>{{row['Temp C']}}</b></td>\n            <td style=\"padding:6px;\">{{row['Hum %']}}</td>\n        </tr>\n    </tbody>\n</table>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1080,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a12e1e5f9e86a1d3",
+        "type": "delay",
+        "z": "7f93e19fc86b0dc6",
+        "d": true,
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "5",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 440,
+        "y": 440,
+        "wires": [
+            [
+                "eac55ad40d5ac2d1"
+            ]
+        ]
+    },
+    {
+        "id": "75ae6a114c77b014",
+        "type": "serial-port",
+        "name": "Puerto USB",
+        "serialport": "COM9",
+        "serialbaud": "9600",
+        "databits": 8,
+        "parity": "none",
+        "stopbits": 1,
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": 10000
+    },
+    {
+        "id": "ui_g_actual",
+        "type": "ui_group",
+        "name": "Lectura actual",
+        "tab": "ui_tab_cd",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_g_hist",
+        "type": "ui_group",
+        "name": "Historial en vivo",
+        "tab": "ui_tab_cd",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "db_centrodatos",
+        "type": "MySQLdatabase",
+        "name": "MariaDB centro_datos",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "centro_datos",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "acc698b5ef2c52d7",
+        "type": "ui_group",
+        "name": "Registros MariaDB",
+        "tab": "",
+        "order": 4,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_g_tabla",
+        "type": "ui_group",
+        "name": "Ultimos registros guardados en MariaDB",
+        "tab": "ui_tab_cd",
+        "order": 4,
+        "disp": true,
+        "width": "12",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ui_tab_cd",
+        "type": "ui_tab",
+        "name": "Monitoreo ambiental",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ca63655c58f58875",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-serialport": "2.0.3",
+            "node-red-dashboard": "3.6.6",
+            "node-red-node-mysql": "3.0.3"
+        }
+    }
+]
